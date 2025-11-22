@@ -13,7 +13,8 @@ export const Scoreboard = ({ ...props }: ScoreboardProps) => {
 
     // const formattedScore = score.toString().padStart(3, "0");
 
-    return <div className={`container-scoreboard ${isAnimationSetScore ? "rainbow" : isActive ? "active": ""} `}>
+    // ${isAnimationSetScore ? "rainbow" : isActive ? "active": ""} 
+    return <div className={`container-scoreboard neon-soft`}>
         <AnimatedScore value={score} />
         {/*formattedScore.split("").map((num, index) => <span key={index}>{num}</span>) */}
     </div>
