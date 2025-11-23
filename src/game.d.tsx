@@ -13,8 +13,3 @@ export type Question = {
     question: string;
     answers: Answer[];
 }
-
-export type Topic = {
-    name: string,
-    questions: Question[];
-}

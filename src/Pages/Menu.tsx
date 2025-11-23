@@ -18,9 +18,9 @@ export const Menu = () => {
                 <GameIcon />
                 <h4>Iniciar</h4>
             </Link>
-            <Link to="/topics" className="links-menu-options purple">
+            <Link to="/questions" className="links-menu-options purple">
                 <QuestionIcon />
-                <h4>Temas</h4>
+                <h4>Preguntas</h4>
             </Link>
             <Link to="/panel" className="links-menu-options yellow">
                 <SettingsIcon />

@@ -1,26 +1,62 @@
 
-import { useRef, useState } from "react";
-import type { Topic } from "../game.d"
-
+import { useMemo, useRef, useState } from "react";
+import type { Answer, Question } from "../game.d"
+import { QuestionIcon } from "../Icons/QuestionIcon";
+import { BackIcon } from "../Icons/BackIcon";
+import { Link } from "react-router";
 
 export const Topics = () => {
 
     const dialogRef = useRef<HTMLDialogElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [input, setInput] = useState("");
+    const iptQuestionRef = useRef<HTMLInputElement>(null);
+    const [iptQuestion, setIptQuestion] = useState("");
+    const [listAnswers, setListAnswers] = useState<Answer[]>([
+        { answer: "", score: 0, revealed: false, },
+        { answer: "", score: 0, revealed: false, },
+        { answer: "", score: 0, revealed: false, },
+        { answer: "", score: 0, revealed: false, },
+        { answer: "", score: 0, revealed: false, }
+    ]);
+
+    const validateSave = useMemo(() => {
+        if (iptQuestion.trim() === "") return false;
+
+        const totalScore = listAnswers.reduce((acc, answer) => acc + answer.score, 0);
+        if (totalScore !== 100) return false;
+
+        return true;
+
+    }, [iptQuestion, listAnswers])
 
     const open = () => {
         dialogRef.current?.showModal();
     };
 
-    const confirm = () => {
+    const onHandleSave = () => {
+
+        if (!localStorage.getItem("questions")) {
+            localStorage.setItem("questions", JSON.stringify([]));
+        }
+
+        const existingQuestions: Question[] = JSON.parse(localStorage.getItem("questions") || "[]");
+        const cleanerAnswer = listAnswers.filter(a => a.answer.trim() !== "" && a.score > 0)
+
+        const newQuestion: Question = {
+            question: iptQuestion,
+            answers: cleanerAnswer
+        }
+
+        existingQuestions.push(newQuestion);
+        localStorage.setItem("questions", JSON.stringify(existingQuestions));
+
+        setIptQuestion("");
+        setListAnswers(listAnswers.map(() => ({ answer: "", score: 0, revealed: false })))
         dialogRef.current?.close();
-        setInput("");
     };
 
     const dismiss = () => {
         dialogRef.current?.close();
-        setInput("");
+        setIptQuestion("");
     };
 
     const onBackdropClick = (e: React.MouseEvent) => {
@@ -35,39 +71,102 @@ export const Topics = () => {
             e.clientY < rect.top ||
             e.clientY > rect.bottom
         ) {
+            setIptQuestion("");
+            setListAnswers(listAnswers.map(() => ({ answer: "", score: 0, revealed: false })))
             dismiss();
         }
     };
 
+    const onHandleAnswerChange = (index: number, value: string) => {
+        const uptAnswer = [...listAnswers];
+        uptAnswer[index].answer = value;
+        setListAnswers(uptAnswer);
+    }
+
+    const onHandleScoreChange = (index: number, value: number) => {
+        const uptAnswer = [...listAnswers];
+        uptAnswer[index].score = value;
+        setListAnswers(uptAnswer)
+    }
+
     return <section style={{ width: "70vw", height: "80vh" }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <h4 className="flux section-title">Temas</h4>
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <Link to="/" className="back-btn"> <BackIcon /></Link>
+                <h4 className="flux section-title">
+                    Preguntas</h4>
+            </div>
             <button className="neon-button" onClick={open}>
                 <span className="flux">Agregar</span>
             </button>
-        </div>
+        </div >
         <TopicList />
         <dialog ref={dialogRef} onClick={onBackdropClick}>
-            <p>Escribe el nombre del tema:</p>
-            <input type="text" placeholder="Cultura general..." ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)} />
+            <p>Escribe tu pregunta</p>
+            <input type="text" placeholder="Cultura general..." ref={iptQuestionRef}
+                value={iptQuestion}
+                onChange={(e) => setIptQuestion(e.target.value)} />
+            <p style={{ marginTop: "10px" }}>Escribe tus respuestas:</p>
+            <span className="text-muted">Los puntos deben tener un valor entre 1 y 100, y entre todos sumar 100 puntos</span>
+            {listAnswers.map((answer, index) => <InputQuestions
+                key={index}
+                index={index}
+                currentAnswer={answer}
+                onSetAnswerValue={(idx, value) => onHandleAnswerChange(idx, value)}
+                onSetScoreValue={(idx, value) => onHandleScoreChange(idx, value)}
+            />
+            )}
             <div className="btns">
-                <button id="dismiss" onClick={dismiss}>Cancelar</button>
-                <button id="confirm" onClick={confirm} disabled={!input.trim()}>Guardar</button>
+                <button onClick={dismiss}>Cancelar</button>
+                <button onClick={onHandleSave} disabled={!validateSave}>Guardar</button>
             </div>
         </dialog>
-    </section>
+    </section >
 }
 
 
 const TopicList = () => {
 
-    if (!localStorage.getItem("topics")) return <div style={{ textAlign: "center", fontSize: "18px", fontWeight: 500 }}>No hay temas aún</div>;
+    if (!localStorage.getItem("questions")) return <div style={{ textAlign: "center", fontSize: "18px", fontWeight: 500 }}>Aún no hay preguntas registradas</div>;
 
-    const topics = JSON.parse(localStorage.getItem("topics") || "{}");
+    const questions = JSON.parse(localStorage.getItem("questions") || "[]");
 
-    return <div>
-        {topics.map((topic: Topic, index: number) => <span key={index}>{topic.name}</span>)}
+    return <div className="container-questions-cards-preview">
+        {questions.map((question: Question, i: number) => <div key={i} className="preview-card">
+            <div className="preview-header">
+                <span className="preview-index">#{i + 1}</span>
+                <h3 className="preview-question">{question.question}</h3>
+            </div>
+            <ul className="preview-answers">
+                {question.answers.map((answer, idx) => <li key={idx}>{answer.answer}</li>)}
+            </ul>
+        </div>)}
+    </div>
+}
+
+type InputQuestionsProps = {
+    index: number,
+    currentAnswer: Answer
+    onSetAnswerValue: (index: number, value: string) => void,
+    onSetScoreValue: (index: number, value: number) => void
+}
+
+const InputQuestions = ({ index, currentAnswer, onSetAnswerValue, onSetScoreValue }: InputQuestionsProps) => {
+
+    const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+        const input = e.currentTarget;
+        const onlyNums = input.value.replace(/\D/g, "");
+        onSetScoreValue(index, isNaN(parseInt(onlyNums)) ? 0 : parseInt(onlyNums));
+    };
+
+    return <div className="input-question-container">
+        <input type="text" placeholder={`Pregunta ${index + 1}`}
+            onChange={(e) => onSetAnswerValue(index, e.target.value)}
+            value={currentAnswer.answer}
+        />
+        <input type="text" placeholder="10"
+            onInput={handleInput}
+            value={currentAnswer.score}
+        />
     </div>
 }

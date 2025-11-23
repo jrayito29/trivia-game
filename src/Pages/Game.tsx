@@ -4,6 +4,7 @@ import { ContainerStrikers } from "../Components/ContainerStrikers";
 import { Scoreboard } from "../Components/Scoreboard";
 import { Tablero } from "../Components/Tablero";
 import { useGameStore } from "../Store/game.store";
+import { Link } from "react-router";
 
 export const Game = () => {
 
@@ -12,6 +13,21 @@ export const Game = () => {
     useEffect(() => {
         generateListCuestion();
     }, [])
+
+    if (!localStorage.getItem("questions")) {
+        return <section className="main-container-menu">
+            <section className="container-name-game-section">
+                <h1 className="container-name-game">
+                    <div className="neon">Trivia</div>
+                    <div className="flux">Game</div>
+                </h1>
+                <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
+                    No hay preguntas registradas para jugar
+                    <Link to="/questions" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Registrar Preguntas</Link>
+                </span>
+            </section>
+        </section>
+    }
 
     return (<>
         <div className="game-container">

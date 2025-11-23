@@ -427,7 +427,7 @@ export const todoQuestions: Question[] = [
             { answer: "Ajá", score: 8, revealed: false },
         ]
     }, {
-        question: "Ago que caracteriza aun bombero",
+        question: "Algo que caracteriza aun bombero",
         answers: [
             { answer: "Uniforme", score: 40, revealed: false },
             { answer: "Casco", score: 32, revealed: false },

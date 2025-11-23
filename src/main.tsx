@@ -13,7 +13,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
             <Route path="/" element={<Menu />} />
             <Route path="game" element={<Game />} />
-            <Route path="topics" element={<Topics />} />
+            <Route path="questions" element={<Topics />} />
             <Route path="panel" element={<Panel />} />
             <Route path="rules" element={<Rules />} />
         </Routes>

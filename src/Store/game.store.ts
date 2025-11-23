@@ -39,14 +39,26 @@ export const useGameStore = create<GameStoreProps>((set, get) => ({
     counterStrikers: 0,
     isAnimationSetScore: false,
     generateListCuestion: () => {
+
+        if (!localStorage.getItem("questions")) {
+            console.log("Primera vez que se juega, cargando preguntas...");
+            return;
+        }
+
+        const existingQuestions = JSON.parse(localStorage.getItem("questions") || "[]")
+
         const questionsIndex: number[] = [];
         while (questionsIndex.length < 5) {
-            const randomIndex = Math.floor(Math.random() * todoQuestions.length);
+            const randomIndex = Math.floor(Math.random() * existingQuestions.length);
             if (!questionsIndex.includes(randomIndex)) {
                 questionsIndex.push(randomIndex);
             }
         }
-        set({ listQuestions: questionsIndex.map(index => todoQuestions[index]), gameState: "playing" });
+        set({
+            listQuestions: questionsIndex.map(index => existingQuestions[index]),
+            gameState: "playing", globalScore: 0, firstTeamScore: 0, secondTeamScore: 0,
+            showsingCentralStrikers: false, currentQuestionIndex: 0, counterStrikers: 0
+        });
     },
     chekingAnswer: (indexAnswer: number) => {
         const { gameState, listQuestions, currentQuestionIndex, globalScore,
