@@ -1,20 +1,22 @@
+import type { Teams } from "../game.d";
 import { useGameStore } from "../Store/game.store";
 import { AnimatedScore } from "./AnimateScore";
 
 type ScoreboardProps = {
     score: number,
-    isActive: boolean
+    isActive: boolean,
+    currentScoreboard: Teams | "main"
 }
 
 export const Scoreboard = ({ ...props }: ScoreboardProps) => {
 
     const { isAnimationSetScore } = useGameStore(state => state);
-    const { score, isActive } = props;
+    const { score, isActive, currentScoreboard } = props;
 
     // const formattedScore = score.toString().padStart(3, "0");
 
     // ${isAnimationSetScore ? "rainbow" : isActive ? "active": ""} 
-    return <div className={`container-scoreboard neon-soft`}>
+    return <div className={`container-scoreboard scoreboard-${currentScoreboard}`}>
         <AnimatedScore value={score} />
         {/*formattedScore.split("").map((num, index) => <span key={index}>{num}</span>) */}
     </div>

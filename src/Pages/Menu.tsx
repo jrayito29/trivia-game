@@ -22,7 +22,7 @@ export const Menu = () => {
                 <QuestionIcon />
                 <h4>Preguntas</h4>
             </Link>
-            <Link to="/panel" className="links-menu-options yellow">
+            <Link to="/panel" target="_blank" className="links-menu-options yellow">
                 <SettingsIcon />
                 <h4>Panel</h4>
             </Link>

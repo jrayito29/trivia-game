@@ -1,14 +1,13 @@
 import { create } from "zustand";
 import type { GameState, Question, Teams } from "../game.d";
-import { todoQuestions } from "../Utils/Questions";
+// import { todoQuestions } from "../Utils/Questions";
 import { useAudio } from "../Hooks/useAudio";
 
 const [playCorrect] = useAudio("audioCorrecto")
 const [playIncorrect] = useAudio("audioIncorrecto")
 const [playNextRound] = useAudio("nextRound")
 
-
-type GameStoreProps = {
+interface ValuesGameState {
     gameState: GameState,
     globalScore: number;
     firstTeamScore: number;
@@ -19,25 +18,32 @@ type GameStoreProps = {
     listQuestions: Question[],
     counterStrikers: number,
     isAnimationSetScore: boolean,
+}
+
+interface GameStoreProps {
     generateListCuestion: () => void,
     chekingAnswer: (indexAnswer: number) => void,
     checkingWinner: () => void,
     markingStriker: () => void,
     setScoreCurrentTeam: () => void,
     incrementCurrentQuestionIndex: () => void
+    setStateFromStorage: (newState: ValuesGameState) => void,
+    setCurrentTeam: (team: Teams) => void,
+    reset: () => void
 }
 
-export const useGameStore = create<GameStoreProps>((set, get) => ({
-    gameState: "rules",
+export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, store) => ({
+    gameState: "init",
     globalScore: 0,
     firstTeamScore: 0,
     secondTeamScore: 0,
     showsingCentralStrikers: false,
     currentQuestionIndex: 0,
-    currentTeam: "blue",
+    currentTeam: "none",
     listQuestions: [],
     counterStrikers: 0,
     isAnimationSetScore: false,
+    setStateFromStorage: (newState) => set(newState),
     generateListCuestion: () => {
 
         if (!localStorage.getItem("questions")) {
@@ -61,13 +67,17 @@ export const useGameStore = create<GameStoreProps>((set, get) => ({
         });
     },
     chekingAnswer: (indexAnswer: number) => {
-        const { gameState, listQuestions, currentQuestionIndex, globalScore,
+        const { gameState, listQuestions, currentQuestionIndex, globalScore, currentTeam,
             setScoreCurrentTeam, checkingWinner, incrementCurrentQuestionIndex } = get();
+
+        if (currentTeam === "none") return;
+
         const currentQuestion = listQuestions[currentQuestionIndex];
         if (currentQuestion.answers[indexAnswer].revealed) return;
 
         currentQuestion.answers[indexAnswer].revealed = true;
-        const score = currentQuestion.answers[indexAnswer].score;
+        const multiplicador = [1, 1, 2, 2, 3];
+        const score = currentQuestion.answers[indexAnswer].score * multiplicador[currentQuestionIndex];
         set({ listQuestions: listQuestions.map((question, index) => index === currentQuestionIndex ? currentQuestion : question) })
 
 
@@ -164,5 +174,32 @@ export const useGameStore = create<GameStoreProps>((set, get) => ({
         console.log("Juego finalizado");
         setTimeout(() => set({ isAnimationSetScore: false }), 5000)
         set({ gameState: "finishing", counterStrikers: 0 })
-    }
+    },
+    setCurrentTeam: (team: Teams) => set({ currentTeam: team }),
+    reset: () => set(store.getInitialState())
 }));
+
+
+useGameStore.subscribe(
+    (state) => {
+        const stateToStore = {
+            gameState: state.gameState,
+            globalScore: state.globalScore,
+            firstTeamScore: state.firstTeamScore,
+            secondTeamScore: state.secondTeamScore,
+            showsingCentralStrikers: state.showsingCentralStrikers,
+            currentQuestionIndex: state.currentQuestionIndex,
+            currentTeam: state.currentTeam,
+            listQuestions: state.listQuestions,
+            counterStrikers: state.counterStrikers,
+            isAnimationSetScore: state.isAnimationSetScore,
+        };
+        try {
+            console.log("Guardando estado en localStorage:");
+            localStorage.setItem("game", JSON.stringify(stateToStore));
+        } catch (e) {
+            console.error("Error al guardar estado en localStorage:", e);
+        }
+    }
+    // Puedes pasar un selector aquí si solo quieres guardar una parte
+);

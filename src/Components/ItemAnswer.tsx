@@ -12,7 +12,7 @@ export const ItemAnswer = ({ ...props }: ItemAnswerProp) => {
     const { answer: { answer, score, revealed }, index } = props;
 
     return <div className="container-answer">
-        <div className="item-answer">{index}.</div>
+        {/* <div className="item-answer">{index}.</div> */}
         <button className="label-answer" onClick={() => chekingAnswer(index - 1)}>
             <span className={`animation-answer ${revealed ? "showing" : ""}`}></span>
             <div className="container-label-answer">
