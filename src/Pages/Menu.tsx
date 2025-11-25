@@ -14,11 +14,11 @@ export const Menu = () => {
             </h1>
         </section>
         <section className="container-menu-options">
-            <Link to="/game" className="links-menu-options pink">
+            <Link to="/game" className="links-menu-options pink" viewTransition>
                 <GameIcon />
                 <h4>Iniciar</h4>
             </Link>
-            <Link to="/questions" className="links-menu-options purple">
+            <Link to="/questions" className="links-menu-options purple" viewTransition>
                 <QuestionIcon />
                 <h4>Preguntas</h4>
             </Link>
@@ -26,7 +26,7 @@ export const Menu = () => {
                 <SettingsIcon />
                 <h4>Panel</h4>
             </Link>
-            <Link to="/rules" className="links-menu-options red">
+            <Link to="/rules" className="links-menu-options red" viewTransition>
                 <RulesIcon />
                 <h4>Reglas</h4>
             </Link>

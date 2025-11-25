@@ -92,10 +92,11 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
                 setScoreCurrentTeam();
                 setTimeout(() => set({ isAnimationSetScore: false }), 5000)
                 break;
-            case "round-finished":
+            case "round-finished": {
                 const allRevealed = currentQuestion.answers.every(ans => ans.revealed);
                 if (allRevealed) incrementCurrentQuestionIndex();
                 break;
+            }
         }
     },
     checkingWinner: () => {
