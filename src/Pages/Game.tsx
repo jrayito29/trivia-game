@@ -31,19 +31,6 @@ export const Game = () => {
         };
     }, [setStateFromStorage]);
 
-    if (listQuestions.length === 0) {
-        return <section className="main-container-menu">
-            <section className="container-name-game-section">
-                <h1 className="container-name-game">
-                    <div className="neon">Trivia</div>
-                    <div className="flux">Game</div>
-                </h1>
-                <span className="text-muted" style={{ display: "block", textAlign: "center", fontSize: "1em" }}>
-                    Inicia el juego desde el panel de control
-                </span>
-            </section>
-        </section>
-    }
 
     // if (!localStorage.getItem("questions")) {
     //     return <section className="main-container-menu">
@@ -59,6 +46,22 @@ export const Game = () => {
     //         </section>
     //     </section>
     // }
+
+
+    if (listQuestions.length === 0) {
+        return <section className="main-container-menu">
+            <section className="container-name-game-section">
+                <h1 className="container-name-game">
+                    <div className="neon">Trivia</div>
+                    <div className="flux">Game</div>
+                </h1>
+                <span className="text-muted" style={{ display: "block", textAlign: "center", fontSize: "1em" }}>
+                    Inicia el juego desde el panel de control
+                    <Link to="/" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Regresar Inicio</Link>
+                </span>
+            </section>
+        </section>
+    }
 
     return (<>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
