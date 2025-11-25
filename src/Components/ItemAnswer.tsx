@@ -1,5 +1,5 @@
 import type { Answer } from "../game.d";
-import { useGameStore } from "../Store/game.store";
+// import { useGameStore } from "../Store/game.store";
 
 type ItemAnswerProp = {
     index: number,
@@ -8,12 +8,13 @@ type ItemAnswerProp = {
 
 export const ItemAnswer = ({ ...props }: ItemAnswerProp) => {
 
-    const { chekingAnswer } = useGameStore(state => state);
-    const { answer: { answer, score, revealed }, index } = props;
+    // const { chekingAnswer } = useGameStore(state => state);
+    const { answer: { answer, score, revealed } } = props;
 
     return <div className="container-answer">
         {/* <div className="item-answer">{index}.</div> */}
-        <button className="label-answer" onClick={() => chekingAnswer(index - 1)}>
+        {/* onClick={() => chekingAnswer(index - 1)} */}
+        <button className="label-answer" >
             <span className={`animation-answer ${revealed ? "showing" : ""}`}></span>
             <div className="container-label-answer">
                 <span>{answer}</span>

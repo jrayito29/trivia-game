@@ -219,6 +219,18 @@ h1 {
     0 0 30px rgba(var(--red-neon-color), 0.4);
 }
 
+.scoreboard-blue.scoreboard-blue-active{
+  border-bottom: 10px !important;
+  border-color: rgb(var(--blue-neon-color)) !important;
+  border-style: solid !important;
+}
+
+.scoreboard-red.scoreboard-red-active{
+  border-bottom: 10px !important;
+  border-color: rgb(var(--red-neon-color)) !important;
+  border-style: solid !important;
+}
+
 .container-scoreboard span {
   font-weight: bold;
 }
@@ -378,11 +390,19 @@ button:active .button_top {
 
 .rules-game {
   width: 750px;
-  max-height: 550px;
-  overflow: scroll;
-  padding: 10px;
   border-radius: 4px;
   margin-bottom: 10px;
+}
+
+.container-rules-game{
+max-height: 80vh;
+  overflow: scroll;
+  padding: 10px;
+}
+
+.rules-game .flux, .rules-game .neon{
+  font-size: 4rem;
+  line-height: 4rem;
 }
 
 h2 {
@@ -415,6 +435,9 @@ ul {
 .container-name-game-section {
   width: 70%;
   margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .container-name-game {
@@ -749,10 +772,9 @@ input:focus {
   --red-flux-color-neon: 251, 66, 100;
   width: 100%;
   max-width: 23%;
+  max-height: 230px;
   padding: 18px 22px;
   border-radius: 14px;
-  /* background: #101010; */
-  /* margin: 14px auto; */
   border: 2px solid rgb(var(--red-flux-color-neon));
   color: white;
   box-shadow: 0 0 8px rgba(var(--red-flux-color-neon), 0.6),
@@ -831,3 +853,87 @@ input:focus {
   transform: translate(-50%, -50%);
   z-index: 10;
 }
+
+
+.container-select-team{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.container-buttons-select-team{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+}
+
+.container-buttons-select-team button, .btn-init-game, .btn-reiniciar, .btn-strike{
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.container-buttons-select-team button:hover, .btn-init-game:hover, .btn-reiniciar:hover, .btn-strike:hover{
+  transform: translateY(-2px);
+}
+
+
+.container-buttons-select-team button:first-child, .btn-reiniciar{
+  background-color: rgb(var(--blue-neon-color));
+}
+.container-buttons-select-team button:last-child, .btn-strike{
+  background-color: rgb(var(--red-neon-color));
+}
+
+.tablero-mediador{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid red;
+  margin-top: 15px;
+  border: 2px solid rgb(var(--purple-neon-color));
+  box-shadow: 0 0 34px rgba(var(--purple-neon-color), 0.7),
+    0 0 30px rgba(var(--purple-neon-color), 0.4);
+  min-width: 400px;
+}
+
+.tablero-mediador > span:first-child{
+  font-size: 1.3rem;
+  font-weight: bold;
+  background-color: rgb(var(--purple-neon-color));
+  padding: 12px 10px;
+}
+
+.show-answer-btn{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border: none;
+  padding: 10px 12px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.show-answer-btn.active{
+background-color: rgb(var(--purple-neon-color));
+}
+
+.btn-init-game{
+  background-color: rgb(var(--blue-neon-color));
+}
+
+.container-actions-game{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+

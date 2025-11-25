@@ -5,8 +5,6 @@ import { useEffect } from "react";
 
 export const Panel = () => {
 
-    const { listQuestions } = useGameStore(state => state);
-
     return <section style={{ width: "70vw", height: "80vh" }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -24,23 +22,43 @@ export const Panel = () => {
 const ActionsJuego = () => {
 
     const { gameState, listQuestions, currentQuestionIndex, currentTeam,
-        generateListCuestion, setCurrentTeam, reset, chekingAnswer } = useGameStore(state => state);
+        generateListCuestion, setCurrentTeam, reset, chekingAnswer, markingStriker } = useGameStore(state => state);
 
-    if (gameState === "init") return <button onClick={generateListCuestion}>Iniciar juego</button>
+    useEffect(() => {
+        setCurrentTeam("none");
+    }, [currentQuestionIndex, setCurrentTeam])
+
+    if (gameState === "init") return <button onClick={generateListCuestion} className="btn-init-game">Iniciar juego</button>
 
     return <div style={{ textAlign: "center" }}>
         <span style={{ display: "block" }}>El juego ya ha comenzado</span>
-        {currentTeam === "none" && currentQuestionIndex === 0 && <div>
+        {currentTeam === "none" && <div className="container-select-team">
             <span>Seleccione un equipo</span>
-            <button onClick={() => setCurrentTeam("blue")}>Equipo Azul</button>
-            <button onClick={() => setCurrentTeam("red")}>Equipo Rojo</button>
+            <div className="container-buttons-select-team">
+                <button onClick={() => setCurrentTeam("blue")}>Equipo Azul</button>
+                <button onClick={() => setCurrentTeam("red")}>Equipo Rojo</button>
+            </div>
         </div>}
-        <span>{listQuestions[currentQuestionIndex].question}</span>
-        {
-            listQuestions[currentQuestionIndex].answers.map((answer, index) => <span onClick={() => chekingAnswer(index)} style={{ display: "block" }} key={index}>{answer.answer}</span>)
-        }
-
-
-        <button onClick={reset}>Reiniciar</button>
+        <div className="tablero-mediador">
+            <span>
+                <span className="preview-index" style={{ marginRight: "5px" }}>
+                    #{currentQuestionIndex + 1}
+                </span>
+                {listQuestions[currentQuestionIndex].question}
+            </span>
+            <div style={{ padding: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                {
+                    listQuestions[currentQuestionIndex].answers.map((answer, index) =>
+                        <button onClick={() => chekingAnswer(index)} className={`show-answer-btn ${!answer.revealed ? "active" : ""}`} key={index}>
+                            <span> {answer.answer}</span>
+                            <span>{answer.score}</span>
+                        </button>)
+                }
+            </div>
+        </div>
+        <div className="container-actions-game">
+            <button onClick={reset} className="btn-reiniciar">Reiniciar</button>
+            <button onClick={markingStriker} className="btn-strike">Strike</button>
+        </div>
     </div>
 }

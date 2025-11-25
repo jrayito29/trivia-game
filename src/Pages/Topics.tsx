@@ -1,7 +1,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { Answer, Question } from "../game.d"
-import { QuestionIcon } from "../Icons/QuestionIcon";
 import { BackIcon } from "../Icons/BackIcon";
 import { Link } from "react-router";
 

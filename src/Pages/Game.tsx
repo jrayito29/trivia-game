@@ -38,27 +38,27 @@ export const Game = () => {
                     <div className="neon">Trivia</div>
                     <div className="flux">Game</div>
                 </h1>
-                <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
+                <span className="text-muted" style={{ display: "block", textAlign: "center", fontSize: "1em" }}>
                     Inicia el juego desde el panel de control
                 </span>
             </section>
         </section>
     }
 
-    if (!localStorage.getItem("questions")) {
-        return <section className="main-container-menu">
-            <section className="container-name-game-section">
-                <h1 className="container-name-game">
-                    <div className="neon">Trivia</div>
-                    <div className="flux">Game</div>
-                </h1>
-                <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
-                    No hay preguntas registradas para jugar
-                    <Link to="/questions" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Registrar Preguntas</Link>
-                </span>
-            </section>
-        </section>
-    }
+    // if (!localStorage.getItem("questions")) {
+    //     return <section className="main-container-menu">
+    //         <section className="container-name-game-section">
+    //             <h1 className="container-name-game">
+    //                 <div className="neon">Trivia</div>
+    //                 <div className="flux">Game</div>
+    //             </h1>
+    //             <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
+    //                 No hay preguntas registradas para jugar
+    //                 <Link to="/questions" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Registrar Preguntas</Link>
+    //             </span>
+    //         </section>
+    //     </section>
+    // }
 
     return (<>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>

@@ -12,6 +12,9 @@ export const Tablero = () => {
     return <div className={isAnimationSetScore ? "rainbow" : ""}>
         <section className="container-questions">
             <span className="question-text">
+                <span className="preview-index" style={{ marginRight: "5px" }}>
+                    #{currentQuestionIndex + 1}
+                </span>
                 {listQuestions[currentQuestionIndex].question}
             </span>
             <div style={{ padding: "16px", display: "flex", gap: "16px", flexDirection: "column" }}>

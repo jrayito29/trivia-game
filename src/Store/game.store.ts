@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { GameState, Question, Teams } from "../game.d";
-// import { todoQuestions } from "../Utils/Questions";
+import { todoQuestions } from "../Utils/Questions";
 import { useAudio } from "../Hooks/useAudio";
 
 const [playCorrect] = useAudio("audioCorrecto")
@@ -46,31 +46,43 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
     setStateFromStorage: (newState) => set(newState),
     generateListCuestion: () => {
 
-        if (!localStorage.getItem("questions")) {
-            console.log("Primera vez que se juega, cargando preguntas...");
-            return;
-        }
+        // if (!localStorage.getItem("questions")) {
+        //     console.log("Primera vez que se juega, cargando preguntas...");
+        //     return;
+        // }
 
-        const existingQuestions = JSON.parse(localStorage.getItem("questions") || "[]")
+        // const todoQuestions = JSON.parse(localStorage.getItem("questions") || "[]")
 
         const questionsIndex: number[] = [];
         while (questionsIndex.length < 5) {
-            const randomIndex = Math.floor(Math.random() * existingQuestions.length);
+            const randomIndex = Math.floor(Math.random() * todoQuestions.length);
             if (!questionsIndex.includes(randomIndex)) {
                 questionsIndex.push(randomIndex);
             }
         }
+        get().reset();
         set({
-            listQuestions: questionsIndex.map(index => existingQuestions[index]),
-            gameState: "playing", globalScore: 0, firstTeamScore: 0, secondTeamScore: 0,
-            showsingCentralStrikers: false, currentQuestionIndex: 0, counterStrikers: 0
+            listQuestions: questionsIndex.map(index => {
+                const { question, answers } = todoQuestions[index];
+                return {
+                    question,
+                    answers: answers.map(a => ({ ...a, revealed: false }))
+                }
+            }),
+            gameState: "playing",
         });
+
+        /**globalScore: 0, firstTeamScore: 0, secondTeamScore: 0,
+            showsingCentralStrikers: false, currentQuestionIndex: 0, counterStrikers: 0 */
     },
     chekingAnswer: (indexAnswer: number) => {
         const { gameState, listQuestions, currentQuestionIndex, globalScore, currentTeam,
             setScoreCurrentTeam, checkingWinner, incrementCurrentQuestionIndex } = get();
 
-        if (currentTeam === "none") return;
+        if (currentTeam === "none") {
+            console.log("No hay un team seleccionado");
+            return;
+        }
 
         const currentQuestion = listQuestions[currentQuestionIndex];
         if (currentQuestion.answers[indexAnswer].revealed) return;
@@ -202,5 +214,4 @@ useGameStore.subscribe(
             console.error("Error al guardar estado en localStorage:", e);
         }
     }
-    // Puedes pasar un selector aquí si solo quieres guardar una parte
 );
