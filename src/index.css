@@ -220,14 +220,14 @@ h1 {
 }
 
 .scoreboard-blue.scoreboard-blue-active{
-  border-bottom: 10px !important;
+  border: 10px solid  rgb(var(--blue-neon-color)) !important;
   border-color: rgb(var(--blue-neon-color)) !important;
   border-style: solid !important;
 }
 
 .scoreboard-red.scoreboard-red-active{
-  border-bottom: 10px !important;
-  border-color: rgb(var(--red-neon-color)) !important;
+  border: 10px solid rgb(var(--red-neon-color)) !important;
+  /* border-color: rgb(var(--red-neon-color)) !important; */
   border-style: solid !important;
 }
 
@@ -781,6 +781,7 @@ input:focus {
     0 0 22px rgb(var(--red-flux-color-neon), 0.4);
   transition: 0.25s ease;
   margin-bottom: 8px;
+  position: relative;
 }
 
 .preview-card:hover {
@@ -830,6 +831,20 @@ input:focus {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.btn-delete-question{
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  background-color: rgb(var(--red-neon-color));
+  border: none;
+}
+
+.btn-delete-question:hover{
+  transform: translateY(-2px);
 }
 
 .back-btn {

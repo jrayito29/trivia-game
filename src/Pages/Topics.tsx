@@ -1,5 +1,5 @@
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Answer, Question } from "../game.d"
 import { BackIcon } from "../Icons/BackIcon";
 import { Link } from "react-router";
@@ -16,6 +16,13 @@ export const Topics = () => {
         { answer: "", score: 0, revealed: false, },
         { answer: "", score: 0, revealed: false, }
     ]);
+
+    const [listQuestions, setListQuestions] = useState<Question[]>([]);
+
+    useEffect(() => {
+        const existingQuestions: Question[] = JSON.parse(localStorage.getItem("questions") || "[]");
+        setListQuestions(existingQuestions);
+    }, []);
 
     const validateSave = useMemo(() => {
         if (iptQuestion.trim() === "") return false;
@@ -50,6 +57,7 @@ export const Topics = () => {
 
         setIptQuestion("");
         setListAnswers(listAnswers.map(() => ({ answer: "", score: 0, revealed: false })))
+        setListQuestions(existingQuestions);
         dialogRef.current?.close();
     };
 
@@ -88,6 +96,13 @@ export const Topics = () => {
         setListAnswers(uptAnswer)
     }
 
+    const deleteQuestion = (questionId: number) => {
+        const existingQuestions: Question[] = JSON.parse(localStorage.getItem("questions") || "[]");
+        existingQuestions.splice(questionId, 1);
+        setListQuestions(existingQuestions);
+        localStorage.setItem("questions", JSON.stringify(existingQuestions));
+    }
+
     return <section style={{ width: "70vw", height: "80vh" }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -99,7 +114,7 @@ export const Topics = () => {
                 <span className="flux">Agregar</span>
             </button>
         </div >
-        <TopicList />
+        <TopicList listQuestions={listQuestions} hadleDeleteQuestion={deleteQuestion} />
         <dialog ref={dialogRef} onClick={onBackdropClick}>
             <p>Escribe tu pregunta</p>
             <input type="text" placeholder="Cultura general..." ref={iptQuestionRef}
@@ -124,14 +139,12 @@ export const Topics = () => {
 }
 
 
-const TopicList = () => {
+const TopicList = ({ listQuestions, hadleDeleteQuestion }: { listQuestions: Question[], hadleDeleteQuestion: (i: number) => void }) => {
 
-    if (!localStorage.getItem("questions")) return <div style={{ textAlign: "center", fontSize: "18px", fontWeight: 500 }}>Aún no hay preguntas registradas</div>;
-
-    const questions = JSON.parse(localStorage.getItem("questions") || "[]");
+    if (listQuestions.length === 0) return <div style={{ textAlign: "center", fontSize: "18px", fontWeight: 500 }}>Aún no hay preguntas registradas</div>;
 
     return <div className="container-questions-cards-preview">
-        {questions.map((question: Question, i: number) => <div key={i} className="preview-card">
+        {listQuestions.map((question: Question, i: number) => <div key={i} className="preview-card">
             <div className="preview-header">
                 <span className="preview-index">#{i + 1}</span>
                 <h3 className="preview-question">{question.question}</h3>
@@ -139,6 +152,7 @@ const TopicList = () => {
             <ul className="preview-answers">
                 {question.answers.map((answer, idx) => <li key={idx}>{answer.answer}</li>)}
             </ul>
+            <button className="btn-delete-question" onClick={() => hadleDeleteQuestion(i)}>Eliminar</button>
         </div>)}
     </div>
 }

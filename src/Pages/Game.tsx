@@ -32,20 +32,36 @@ export const Game = () => {
     }, [setStateFromStorage]);
 
 
-    // if (!localStorage.getItem("questions")) {
-    //     return <section className="main-container-menu">
-    //         <section className="container-name-game-section">
-    //             <h1 className="container-name-game">
-    //                 <div className="neon">Trivia</div>
-    //                 <div className="flux">Game</div>
-    //             </h1>
-    //             <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
-    //                 No hay preguntas registradas para jugar
-    //                 <Link to="/questions" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Registrar Preguntas</Link>
-    //             </span>
-    //         </section>
-    //     </section>
-    // }
+    if (!localStorage.getItem("questions")) {
+        return <section className="main-container-menu">
+            <section className="container-name-game-section">
+                <h1 className="container-name-game">
+                    <div className="neon">Trivia</div>
+                    <div className="flux">Game</div>
+                </h1>
+                <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
+                    No hay preguntas registradas para jugar.
+                    <Link to="/questions" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Registrar Preguntas</Link>
+                </span>
+            </section>
+        </section>
+    }
+
+    const countPreguntas = JSON.parse(localStorage.getItem("questions") || "[]");
+    if (countPreguntas.length < 5) {
+        return <section className="main-container-menu">
+            <section className="container-name-game-section">
+                <h1 className="container-name-game">
+                    <div className="neon">Trivia</div>
+                    <div className="flux">Game</div>
+                </h1>
+                <span className="text-muted" style={{ display: "block", textAlign: "center", marginTop: "20px", fontSize: "1em" }}>
+                    Registra {(5 - countPreguntas.length)} pregunta(s) para jugar.
+                    <Link to="/questions" style={{ textDecoration: "none", color: "white", marginLeft: "5px" }}>Registrar Preguntas</Link>
+                </span>
+            </section>
+        </section>
+    }
 
 
     if (listQuestions.length === 0) {

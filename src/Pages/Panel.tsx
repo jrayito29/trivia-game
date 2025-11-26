@@ -2,21 +2,25 @@ import { Link } from "react-router";
 import { useGameStore } from "../Store/game.store";
 import { BackIcon } from "../Icons/BackIcon";
 import { useEffect } from "react";
+import { Toaster } from "sonner";
 
 export const Panel = () => {
 
-    return <section style={{ width: "70vw", height: "80vh" }}>
-        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ display: "flex", alignItems: "center" }}>
-                <Link to="/" className="back-btn"> <BackIcon /></Link>
-                <h4 className="flux section-title">Panel Control</h4>
+    return <>
+        <Toaster expand visibleToasts={9} />
+        <section style={{ width: "70vw", height: "80vh" }}>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <Link to="/" className="back-btn"> <BackIcon /></Link>
+                    <h4 className="flux section-title">Panel Control</h4>
+                </div>
             </div>
-        </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center", justifyContent: "center" }}>
-            <ActionsJuego />
-        </div>
-    </section >
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center", justifyContent: "center" }}>
+                <ActionsJuego />
+            </div>
+        </section >
+    </>
 }
 
 const ActionsJuego = () => {

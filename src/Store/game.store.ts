@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import type { GameState, Question, Teams } from "../game.d";
-import { todoQuestions } from "../Utils/Questions";
+// import { todoQuestions } from "../Utils/Questions";
 import { useAudio } from "../Hooks/useAudio";
+import { toast } from "sonner";
 
 const [playCorrect] = useAudio("audioCorrecto")
 const [playIncorrect] = useAudio("audioIncorrecto")
@@ -46,12 +47,17 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
     setStateFromStorage: (newState) => set(newState),
     generateListCuestion: () => {
 
-        // if (!localStorage.getItem("questions")) {
-        //     console.log("Primera vez que se juega, cargando preguntas...");
-        //     return;
-        // }
+        if (!localStorage.getItem("questions")) {
+            toast.warning("No hay preguntas para jugar");
+            return;
+        }
 
-        // const todoQuestions = JSON.parse(localStorage.getItem("questions") || "[]")
+        const todoQuestions: Question[] = JSON.parse(localStorage.getItem("questions") || "[]")
+
+        if (todoQuestions.length < 5) {
+            toast.warning("No hay suficiente preguntas para iniciar el juego");
+            return;
+        }
 
         const questionsIndex: number[] = [];
         while (questionsIndex.length < 5) {
@@ -72,8 +78,6 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
             gameState: "playing",
         });
 
-        /**globalScore: 0, firstTeamScore: 0, secondTeamScore: 0,
-            showsingCentralStrikers: false, currentQuestionIndex: 0, counterStrikers: 0 */
     },
     chekingAnswer: (indexAnswer: number) => {
         const { gameState, listQuestions, currentQuestionIndex, globalScore, currentTeam,
