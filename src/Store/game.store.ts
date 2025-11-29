@@ -84,7 +84,7 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
             setScoreCurrentTeam, checkingWinner, incrementCurrentQuestionIndex } = get();
 
         if (currentTeam === "none") {
-            console.log("No hay un team seleccionado");
+            toast.warning("No hay un equipo seleccionado");
             return;
         }
 
@@ -158,7 +158,10 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
             return;
         }
 
-        if (newCounterStrikers >= 4) return;
+        if (newCounterStrikers >= 4) {
+            console.log("Los strikers son 4, no se hace nada");
+            return;
+        }
 
         set({ counterStrikers: newCounterStrikers, showsingCentralStrikers: true })
         setTimeout(() => set({ showsingCentralStrikers: false }), 1500);
