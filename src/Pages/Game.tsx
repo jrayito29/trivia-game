@@ -10,7 +10,8 @@ import { BackIcon } from "../Icons/BackIcon";
 export const Game = () => {
 
     // gameState, markingStriker, generateListCuestion
-    const { globalScore, currentTeam, firstTeamScore, secondTeamScore, listQuestions, setStateFromStorage } = useGameStore(state => state);
+    const { globalScore, currentTeam, firstTeamScore, secondTeamScore, currentQuestion, gameState,
+        setStateFromStorage } = useGameStore(state => state);
 
     useEffect(() => {
         const handleStorageChange = (event: StorageEvent) => {
@@ -64,7 +65,7 @@ export const Game = () => {
     }
 
 
-    if (listQuestions.length === 0) {
+    if (currentQuestion === null && gameState == "init") {
         return <section className="main-container-menu">
             <section className="container-name-game-section">
                 <h1 className="container-name-game">

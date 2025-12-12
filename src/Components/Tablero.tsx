@@ -5,23 +5,23 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export const Tablero = () => {
 
-    const { listQuestions, currentQuestionIndex, isAnimationSetScore } = useGameStore(state => state);
+    const { currentQuestion, countRound, isAnimationSetScore } = useGameStore(state => state);
 
-    if (listQuestions.length === 0) return <div>Cargando preguntas</div>
+    if (currentQuestion === null) return <div>No hay pregunta seleccionada</div>
 
     return <div className={isAnimationSetScore ? "rainbow" : ""}>
         <section className="container-questions">
             <span className="question-text">
                 <span className="preview-index" style={{ marginRight: "5px" }}>
-                    #{currentQuestionIndex + 1}
+                    #{countRound + 1}
                 </span>
-                {listQuestions[currentQuestionIndex].question}
+                {currentQuestion.question}
             </span>
             <div style={{ padding: "16px", display: "flex", gap: "16px", flexDirection: "column" }}>
 
                 <AnimatePresence mode="popLayout">
-                    {listQuestions[currentQuestionIndex].answers.map((answer, index) => <motion.div
-                        key={currentQuestionIndex + "-" + index}
+                    {currentQuestion.answers.map((answer, index) => <motion.div
+                        key={countRound + "-" + index}
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -50, }}

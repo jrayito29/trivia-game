@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './style.css'
 // import App from './App.tsx'
 import { HashRouter, Routes, Route } from "react-router";
 import { Menu } from './Pages/Menu.tsx';

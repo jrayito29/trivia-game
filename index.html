@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivia Game</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/logo.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trivia Game</title>
-</head>
-
-<body>
-  <audio src="./Sounds/correcto.mp3" id="audioCorrecto"></audio>
-  <audio src="./Sounds/error.mp3" id="audioIncorrecto"></audio>
-  <audio src="./Sounds/next-round.mp3" id="nextRound"></audio>
-  <div id="root"></div>
-  <div style="position: absolute; bottom: 0; left: 0; color: #c5c5c5; padding: 10px 12px; opacity: 0.4;">
-    Desarrollador.
-    <span style="display: block;">Jesús R. Hernández</span>
-    <span style="display: block;">Contacto: <strong> jesusraymundi@gmail.com</strong></span>
-  </div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-
+  <body class="body_back">
+    <audio src="./Sounds/correcto.mp3" id="audioCorrecto"></audio>
+    <audio src="./Sounds/error.mp3" id="audioIncorrecto"></audio>
+    <audio src="./Sounds/next-round.mp3" id="nextRound"></audio>
+    <div id="root"></div>
+    <div
+      style="
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        color: #c5c5c5;
+        padding: 10px 12px;
+        opacity: 0.4;
+      "
+    >
+      Desarrollador.
+      <span style="display: block">Jesús R. Hernández</span>
+      <span style="display: block"
+        >Contacto: <strong> jesusraymundi@gmail.com</strong></span
+      >
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

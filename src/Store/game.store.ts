@@ -14,15 +14,19 @@ interface ValuesGameState {
     firstTeamScore: number;
     secondTeamScore: number;
     showsingCentralStrikers: boolean,
-    currentQuestionIndex: number,
+    // currentQuestionIndex: number,
     currentTeam: Teams,
-    listQuestions: Question[],
+    // listQuestions: Question[],
     counterStrikers: number,
     isAnimationSetScore: boolean,
+    currentIndexQuestionSelected: number | null
+    currentQuestion: Question | null
+    countRound: number,
 }
 
 interface GameStoreProps {
-    generateListCuestion: () => void,
+    // generateListCuestion: () => void,
+    initGame: () => void
     chekingAnswer: (indexAnswer: number) => void,
     checkingWinner: () => void,
     markingStriker: () => void,
@@ -30,10 +34,12 @@ interface GameStoreProps {
     incrementCurrentQuestionIndex: () => void
     setStateFromStorage: (newState: ValuesGameState) => void,
     setCurrentTeam: (team: Teams) => void,
-    reset: () => void
+    reset: () => void,
+    setIndexQuestionSelected: (index: number) => void,
 }
 
 export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, store) => ({
+    currentIndexQuestionSelected: null,
     gameState: "init",
     globalScore: 0,
     firstTeamScore: 0,
@@ -44,57 +50,81 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
     listQuestions: [],
     counterStrikers: 0,
     isAnimationSetScore: false,
+    currentQuestion: null,
+    countRound: 0,
     setStateFromStorage: (newState) => set(newState),
-    generateListCuestion: () => {
+    setIndexQuestionSelected: (index: number) => {
+
+        const { gameState, currentQuestion } = get();
+
+        const answers = currentQuestion?.answers ?? [];
+
+        // Verificar respuestas reveladas
+        const anyRevealed = answers.some(a => a.revealed);        // Al menos una revelada
+        const allRevealed = answers.every(a => a.revealed);
+
+        if (!anyRevealed) {
+            set({ currentIndexQuestionSelected: index, gameState: "init" })
+            return;
+        }
+
+        if (["playing", "steal-turn"].includes(gameState)) {
+            toast.warning("Termine la ronda actual para seleccionar una nueva pregunta")
+            return;
+        }
+
+        if (!allRevealed && gameState === "round-finished") {
+            toast.warning("No se han revelado todas las respuestas");
+            return;
+        }
+
+        set({ currentIndexQuestionSelected: index })
+    },
+    initGame: () => {
+        const { currentIndexQuestionSelected } = get();
 
         if (!localStorage.getItem("questions")) {
             toast.warning("No hay preguntas para jugar");
             return;
         }
 
+        if (currentIndexQuestionSelected === null) {
+            toast.warning("Seleccione una pregunta para iniciar el juego");
+            return
+        }
+
+        // get().reset();
+
         const todoQuestions: Question[] = JSON.parse(localStorage.getItem("questions") || "[]")
 
-        if (todoQuestions.length < 5) {
-            toast.warning("No hay suficiente preguntas para iniciar el juego");
-            return;
-        }
-
-        const questionsIndex: number[] = [];
-        while (questionsIndex.length < 5) {
-            const randomIndex = Math.floor(Math.random() * todoQuestions.length);
-            if (!questionsIndex.includes(randomIndex)) {
-                questionsIndex.push(randomIndex);
-            }
-        }
-        get().reset();
-        set({
-            listQuestions: questionsIndex.map(index => {
-                const { question, answers } = todoQuestions[index];
-                return {
-                    question,
-                    answers: answers.map(a => ({ ...a, revealed: false }))
-                }
-            }),
-            gameState: "playing",
-        });
-
+        set({ gameState: "playing", currentQuestion: todoQuestions[currentIndexQuestionSelected] })
     },
     chekingAnswer: (indexAnswer: number) => {
-        const { gameState, listQuestions, currentQuestionIndex, globalScore, currentTeam,
-            setScoreCurrentTeam, checkingWinner, incrementCurrentQuestionIndex } = get();
+        const { gameState, currentQuestion, countRound, globalScore, currentTeam,
+            setScoreCurrentTeam, checkingWinner } = get();
 
         if (currentTeam === "none") {
             toast.warning("No hay un equipo seleccionado");
             return;
         }
 
-        const currentQuestion = listQuestions[currentQuestionIndex];
+        if (currentQuestion == null) {
+            console.log("No hay una pregunta seleccionada", "chekingAnswer()");
+            return
+        }
+
+        if (gameState === "init") {
+            toast.warning("Inicie el juego para revelar la respuesta");
+            return
+        }
+
+        // const currentQuestion = listQuestions[currentQuestionIndex];
         if (currentQuestion.answers[indexAnswer].revealed) return;
 
         currentQuestion.answers[indexAnswer].revealed = true;
         const multiplicador = [1, 1, 2, 2, 3];
-        const score = currentQuestion.answers[indexAnswer].score * multiplicador[currentQuestionIndex];
-        set({ listQuestions: listQuestions.map((question, index) => index === currentQuestionIndex ? currentQuestion : question) })
+        const score = currentQuestion.answers[indexAnswer].score * multiplicador[countRound];
+        set({ currentQuestion: currentQuestion })
 
 
         playCorrect();
@@ -110,20 +140,24 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
                 break;
             case "round-finished": {
                 const allRevealed = currentQuestion.answers.every(ans => ans.revealed);
-                if (allRevealed) incrementCurrentQuestionIndex();
+                if (allRevealed) set({ currentIndexQuestionSelected: null })
                 break;
             }
         }
     },
     checkingWinner: () => {
-        const { listQuestions, currentQuestionIndex, setScoreCurrentTeam, incrementCurrentQuestionIndex } = get();
+        const { currentQuestion, setScoreCurrentTeam } = get();
 
-        const currentQuestion = listQuestions[currentQuestionIndex];
+        if (currentQuestion === null) {
+            console.log("No hay una pregunta seleccionada", "checkingWinner()");
+            return
+        }
+
         const allRevealed = currentQuestion.answers.every(ans => ans.revealed);
 
         if (allRevealed) {
             setScoreCurrentTeam();
-            incrementCurrentQuestionIndex();
+            // incrementCurrentQuestionIndex();
             return;
         }
     },
@@ -179,14 +213,31 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
 
     },
     incrementCurrentQuestionIndex: () => {
-        const { currentQuestionIndex } = get();
+        const { countRound, currentQuestion, currentIndexQuestionSelected } = get();
 
-        const newQuestionIndex = currentQuestionIndex + 1;
+        const allRevealed = currentQuestion?.answers.every(ans => ans.revealed);
+
+        if (!allRevealed) {
+            toast.warning("No se han revelado todas las respuestas");
+            return
+        }
+
+        if (currentIndexQuestionSelected === null) {
+            toast.warning("No se ha seleccionado una pregunta");
+            return;
+        }
+
+        const todoQuestions: Question[] = JSON.parse(localStorage.getItem("questions") || "[]")
+
+        const newQuestionIndex = countRound + 1;
         if (newQuestionIndex < 5) {
-            console.log("Pregunta", currentQuestionIndex + 1);
+            console.log("Pregunta", countRound + 1);
+            playNextRound();
+            set({
+                countRound: newQuestionIndex, counterStrikers: 0, currentQuestion: todoQuestions[currentIndexQuestionSelected],
+                gameState: "playing", isAnimationSetScore: false
+            })
             setTimeout(() => {
-                playNextRound();
-                set({ currentQuestionIndex: newQuestionIndex, counterStrikers: 0, gameState: "playing", isAnimationSetScore: false })
             }, 5000)
             return;
         }
@@ -208,11 +259,13 @@ useGameStore.subscribe(
             firstTeamScore: state.firstTeamScore,
             secondTeamScore: state.secondTeamScore,
             showsingCentralStrikers: state.showsingCentralStrikers,
-            currentQuestionIndex: state.currentQuestionIndex,
+            // currentQuestionIndex: state.currentQuestionIndex,
             currentTeam: state.currentTeam,
-            listQuestions: state.listQuestions,
+            currentQuestion: state.currentQuestion,
             counterStrikers: state.counterStrikers,
             isAnimationSetScore: state.isAnimationSetScore,
+            currentIndexQuestionSelected: state.currentIndexQuestionSelected,
+            countRound: state.countRound
         };
         try {
             console.log("Guardando estado en localStorage:");
