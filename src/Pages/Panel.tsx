@@ -27,8 +27,9 @@ export const Panel = () => {
 const ActionsJuego = () => {
 
     const [listQuestion, setListQuestion] = useState<Question[]>([]);
-    const { gameState, currentQuestion, currentIndexQuestionSelected, countRound, currentTeam,
-        setCurrentTeam, reset, chekingAnswer, markingStriker, initGame, setIndexQuestionSelected, incrementCurrentQuestionIndex } = useGameStore(state => state);
+    const { gameState, currentQuestion, currentIndexQuestionSelected, countRound,
+        setCurrentTeam, reset, chekingAnswer, markingStriker, initGame, setIndexQuestionSelected, incrementCurrentQuestionIndex, setGameState,
+        setScoreCurrentTeam, stealScore, resetStriker } = useGameStore(state => state);
 
     useEffect(() => {
         setCurrentTeam("none");
@@ -54,13 +55,13 @@ const ActionsJuego = () => {
             </div>
         </section>
         <section style={{ textAlign: "center" }}>
-            {currentTeam === "none" && <div className="container-select-team">
+            <div className="container-select-team">
                 <span>Seleccione un equipo</span>
                 <div className="container-buttons-select-team">
                     <button onClick={() => setCurrentTeam("blue")}>Equipo Azul</button>
                     <button onClick={() => setCurrentTeam("red")}>Equipo Rojo</button>
                 </div>
-            </div>}
+            </div>
             <div className="tablero-mediador">
                 <span>
                     <span className="preview-index" style={{ marginRight: "5px" }}>
@@ -81,8 +82,14 @@ const ActionsJuego = () => {
             <div className="container-actions-game">
                 <button onClick={reset} className="btn-reiniciar">Reiniciar</button>
                 {gameState === "init" && <button onClick={initGame} className="btn-init-game">Iniciar juego</button>}
-                <button onClick={markingStriker} className="btn-strike">Strike</button>
+                <button onClick={markingStriker} className="btn-strike">Marcar Strike</button>
+                <button onClick={resetStriker} className="btn-reiniciar">Reestabler Strike</button>
                 <button onClick={incrementCurrentQuestionIndex} className="btn-reiniciar">Siguiente Ronda</button>
+                <button onClick={stealScore} className="btn-reiniciar">Robo de Puntos</button>
+                <button onClick={() => {
+                    setScoreCurrentTeam()
+                    setGameState("round-finished");
+                }} className="btn-reiniciar">Asignar Puntos</button>
             </div>
         </section>
     </div>

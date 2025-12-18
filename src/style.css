@@ -797,11 +797,9 @@ input:focus {
 }
 
 .container-actions-game {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px; /* espacio entre botones */
 }
 
 .body_back {

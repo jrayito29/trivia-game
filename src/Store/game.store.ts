@@ -36,6 +36,9 @@ interface GameStoreProps {
     setCurrentTeam: (team: Teams) => void,
     reset: () => void,
     setIndexQuestionSelected: (index: number) => void,
+    setGameState: (state: GameState) => void,
+    stealScore: () => void,
+    resetStriker: () => void
 }
 
 export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, store) => ({
@@ -68,7 +71,7 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
             return;
         }
 
-        if (["playing", "steal-turn"].includes(gameState)) {
+        if (["playing"].includes(gameState)) {
             toast.warning("Termine la ronda actual para seleccionar una nueva pregunta")
             return;
         }
@@ -100,13 +103,12 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
         set({ gameState: "playing", currentQuestion: todoQuestions[currentIndexQuestionSelected] })
     },
     chekingAnswer: (indexAnswer: number) => {
-        const { gameState, currentQuestion, countRound, globalScore, currentTeam,
-            setScoreCurrentTeam, checkingWinner } = get();
+        const { gameState, currentQuestion, countRound, globalScore, checkingWinner } = get();
 
-        if (currentTeam === "none") {
-            toast.warning("No hay un equipo seleccionado");
-            return;
-        }
+        // if (currentTeam === "none") {
+        //     toast.warning("No hay un equipo seleccionado");
+        //     return;
+        // }
 
         if (currentQuestion == null) {
             console.log("No hay una pregunta seleccionada", "chekingAnswer()");
@@ -126,7 +128,6 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
         const score = currentQuestion.answers[indexAnswer].score * multiplicador[countRound];
         set({ currentQuestion: currentQuestion })
 
-
         playCorrect();
         switch (gameState) {
             case "playing":
@@ -135,7 +136,7 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
                 break;
             case "steal-turn":
                 set({ globalScore: globalScore + score, gameState: "round-finished" })
-                setScoreCurrentTeam();
+                // setScoreCurrentTeam();
                 setTimeout(() => set({ isAnimationSetScore: false }), 5000)
                 break;
             case "round-finished": {
@@ -146,7 +147,7 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
         }
     },
     checkingWinner: () => {
-        const { currentQuestion, setScoreCurrentTeam } = get();
+        const { currentQuestion } = get();
 
         if (currentQuestion === null) {
             console.log("No hay una pregunta seleccionada", "checkingWinner()");
@@ -156,24 +157,24 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
         const allRevealed = currentQuestion.answers.every(ans => ans.revealed);
 
         if (allRevealed) {
-            setScoreCurrentTeam();
+            // setScoreCurrentTeam();
             // incrementCurrentQuestionIndex();
             return;
         }
     },
     markingStriker: () => {
-        const { counterStrikers, currentTeam, gameState, setScoreCurrentTeam } = get();
+        const { counterStrikers, currentTeam, gameState } = get();
 
         playIncorrect();
         if (gameState === "steal-turn") {
-            const nextTeam = currentTeam === "blue" ? "red" : "blue";
+            // const nextTeam = currentTeam === "blue" ? "red" : "blue";
             set({
-                currentTeam: nextTeam,
+                currentTeam: currentTeam,
                 showsingCentralStrikers: true,
                 counterStrikers: 1,
                 gameState: "round-finished" // termina la ronda, se muestran las respuestas no adivinadas
             })
-            setScoreCurrentTeam();
+            // setScoreCurrentTeam();
             setTimeout(() => set({ isAnimationSetScore: false, counterStrikers: 0 }), 5000)
             setTimeout(() => set({ showsingCentralStrikers: false }), 1500);
             return;
@@ -181,9 +182,9 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
 
         const newCounterStrikers = counterStrikers + 1;
         if (newCounterStrikers === 3) {
-            const nextTeam = currentTeam === "blue" ? "red" : "blue";
+            // const nextTeam = currentTeam === "blue" ? "red" : "blue";
             set({
-                currentTeam: nextTeam,
+                currentTeam: currentTeam,
                 showsingCentralStrikers: true,
                 counterStrikers: newCounterStrikers,
                 gameState: "steal-turn" // ==> se cambia a robo de puntos
@@ -202,6 +203,11 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
     },
     setScoreCurrentTeam: () => {
         const { currentTeam, firstTeamScore, secondTeamScore, globalScore } = get();
+
+        if (currentTeam === "none") {
+            toast.warning("No hay un equipo seleccionado");
+            return;
+        }
 
         if (currentTeam === "blue") {
             set({ firstTeamScore: firstTeamScore + globalScore, globalScore: 0 });
@@ -246,8 +252,26 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
         setTimeout(() => set({ isAnimationSetScore: false }), 5000)
         set({ gameState: "finishing", counterStrikers: 0 })
     },
-    setCurrentTeam: (team: Teams) => set({ currentTeam: team }),
-    reset: () => set(store.getInitialState())
+    setCurrentTeam: (team: Teams) => {
+
+        set({ currentTeam: team });
+        get().checkingWinner();
+
+    },
+    reset: () => set(store.getInitialState()),
+    setGameState: (state: GameState) => set({ gameState: state }),
+    resetStriker: () => set({ counterStrikers: 0 }),
+    stealScore: () => {
+        const { currentTeam } = get();
+
+        if (currentTeam === "none") {
+            toast.warning("No hay un equipo seleccionado");
+            return;
+        }
+
+        const nextTeam = currentTeam === "blue" ? "red" : "blue";
+        set({ gameState: "steal-turn", currentTeam: nextTeam })
+    }
 }));
 
 
