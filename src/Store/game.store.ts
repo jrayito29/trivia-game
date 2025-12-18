@@ -256,7 +256,6 @@ export const useGameStore = create<ValuesGameState & GameStoreProps>((set, get, 
 
         set({ currentTeam: team });
         get().checkingWinner();
-
     },
     reset: () => set(store.getInitialState()),
     setGameState: (state: GameState) => set({ gameState: state }),
